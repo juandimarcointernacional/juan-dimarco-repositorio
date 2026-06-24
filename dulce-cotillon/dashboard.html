@@ -218,35 +218,10 @@
     background: linear-gradient(to top, rgba(15, 11, 9, 0.78) 0%, rgba(15, 11, 9, 0.32) 45%, transparent 72%);
   }
 
-  /* ---------- Design-only pieces: fondo plano + confeti ---------- */
+  /* ---------- Design-only pieces: bloque de color plano ---------- */
   .piece-canvas[data-formato="design"] {
     background: var(--accent2);
   }
-
-  /* ---------- Confeti decorativo (mismas piezas en foto y diseño) ---------- */
-  .confetti {
-    position: absolute;
-    z-index: 1;
-    pointer-events: none;
-  }
-
-  .confetti--circle { border-radius: 50%; }
-  .confetti--square { border-radius: 4px; }
-  .confetti--triangle {
-    width: 0;
-    height: 0;
-    background: transparent !important;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-bottom: 14px solid currentColor;
-  }
-
-  .confetti--1 { top: 18px; right: 26px; width: 16px; height: 16px; background: var(--coral); transform: rotate(8deg); }
-  .confetti--2 { top: 52px; right: 64px; width: 10px; height: 10px; background: var(--cream); opacity: 0.9; }
-  .confetti--3 { top: 14px; right: 92px; color: var(--accent2); transform: rotate(20deg); }
-  .confetti--4 { top: 70px; right: 22px; width: 12px; height: 12px; background: var(--cream); opacity: 0.85; transform: rotate(-12deg); }
-  .confetti--5 { top: 96px; right: 56px; width: 9px; height: 9px; background: var(--coral); opacity: 0.9; }
-  .confetti--6 { top: 36px; right: 16px; color: var(--coral); opacity: 0.8; transform: rotate(-30deg) scale(0.8); }
 
   /* ---------- Text content layer ---------- */
   .piece-content {
@@ -255,7 +230,7 @@
     z-index: 2;
     display: flex;
     flex-direction: column;
-    padding: 22px;
+    padding: 24px;
   }
 
   .piece-canvas[data-formato="foto"] .piece-content {
@@ -264,36 +239,28 @@
 
   .piece-canvas[data-formato="design"] .piece-content {
     justify-content: center;
-    align-items: flex-start;
   }
 
   .piece-kicker {
-    display: inline-block;
-    align-self: flex-start;
     font-family: var(--font-body);
-    font-weight: 800;
+    font-weight: 700;
     font-size: 12px;
-    letter-spacing: 0.01em;
+    letter-spacing: 0.03em;
     text-transform: uppercase;
-    background: var(--accent2);
-    color: var(--accent2-text);
-    padding: 7px 16px;
-    border-radius: 14px 14px 14px 4px;
-    margin-bottom: 14px;
-    transform: rotate(-2deg);
+    margin-bottom: 8px;
   }
 
-  .piece-canvas[data-formato="design"] .piece-kicker {
-    background: var(--coral);
-    color: #FFFDF8;
-  }
+  .piece-canvas[data-formato="foto"] .piece-kicker { color: rgba(255, 248, 239, 0.85); }
+  .piece-canvas[data-formato="design"] .piece-kicker { color: var(--accent2-text); opacity: 0.7; }
+
+  .piece-kicker:empty { display: none; }
 
   .piece-headline {
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: 29px;
-    line-height: 1.08;
-    margin-bottom: 10px;
+    font-size: 23px;
+    line-height: 1.22;
+    margin-bottom: 8px;
   }
 
   .piece-canvas[data-formato="foto"] .piece-headline { color: var(--cream); }
@@ -302,28 +269,27 @@
   .piece-sub {
     font-family: var(--font-body);
     font-weight: 500;
-    font-size: 15px;
+    font-size: 14.5px;
     line-height: 1.4;
-    margin-bottom: 14px;
+    margin-bottom: 10px;
   }
 
-  .piece-canvas[data-formato="foto"] .piece-sub { color: rgba(255, 248, 239, 0.88); }
-  .piece-canvas[data-formato="design"] .piece-sub { color: var(--accent2-text); opacity: 0.85; }
+  .piece-canvas[data-formato="foto"] .piece-sub { color: rgba(255, 248, 239, 0.85); }
+  .piece-canvas[data-formato="design"] .piece-sub { color: var(--accent2-text); opacity: 0.82; }
 
   .piece-sub:empty { display: none; }
 
   .piece-cta {
     display: inline-block;
-    align-self: flex-start;
     font-family: var(--font-body);
     font-weight: 700;
-    font-size: 14px;
-    background: var(--coral);
-    color: #FFFDF8;
-    padding: 12px 22px;
-    border-radius: var(--radius-pill);
-    box-shadow: var(--shadow-pop);
+    font-size: 13.5px;
   }
+
+  .piece-canvas[data-formato="foto"] .piece-cta { color: var(--cream); }
+  .piece-canvas[data-formato="design"] .piece-cta { color: var(--accent2-text); }
+
+  .piece-cta::after { content: ' \2192'; }
 
   .piece-cta:empty { display: none; }
 
@@ -492,14 +458,6 @@
     return html;
   }
 
-  var CONFETTI_SHAPES =
-    '<span class="confetti confetti--1 confetti--circle"></span>' +
-    '<span class="confetti confetti--2 confetti--circle"></span>' +
-    '<span class="confetti confetti--3 confetti--triangle"></span>' +
-    '<span class="confetti confetti--4 confetti--square"></span>' +
-    '<span class="confetti confetti--5 confetti--circle"></span>' +
-    '<span class="confetti confetti--6 confetti--triangle"></span>';
-
   function buildCanvas(p) {
     var photoBlock = '';
     if (p.formato === 'foto') {
@@ -512,7 +470,6 @@
     return (
       '<div class="piece-canvas" data-ratio="' + p.ratio + '" data-formato="' + p.formato + '" data-palette="' + p.palette + '">' +
         photoBlock +
-        CONFETTI_SHAPES +
         '<div class="piece-content">' +
           '<div class="piece-kicker" contenteditable="true" spellcheck="false">' + p.kicker + '</div>' +
           '<div class="piece-headline" contenteditable="true" spellcheck="false">' + p.headline + '</div>' +

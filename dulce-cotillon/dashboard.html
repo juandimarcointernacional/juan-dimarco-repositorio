@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dulce Cotillón — Tablero de contenido · Semana del Amigo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #FFF8EF;
+    --ink: #221B17;
+    --coral: #FF5A4E;
+    --line: rgba(34, 27, 23, 0.12);
+    --line-soft: rgba(34, 27, 23, 0.07);
+    --radius-card: 18px;
+    --radius-pill: 999px;
+    --font-display: 'Fraunces', serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --shadow-card: 0 1px 2px rgba(34, 27, 23, 0.04), 0 12px 28px -12px rgba(34, 27, 23, 0.18);
+  }
+
+  html, body {
+    background: #F1EAE0;
+    color: var(--ink);
+    font-family: var(--font-body);
+  }
+
+  [contenteditable]:focus { outline: none; }
+  [contenteditable] { cursor: text; }
+
+  .page {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 32px 28px 80px;
+  }
+
+  /* ---------- Header ---------- */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px;
+    flex-wrap: wrap;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 32px;
+  }
+
+  .header__eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--coral);
+    margin-bottom: 10px;
+  }
+
+  .header__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(28px, 3.4vw, 42px);
+    line-height: 1.08;
+    margin-bottom: 8px;
+  }
+
+  .header__sub {
+    font-size: 14.5px;
+    color: rgba(34, 27, 23, 0.65);
+  }
+
+  .header__actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .status-text {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: rgba(34, 27, 23, 0.55);
+  }
+
+  .btn {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 14px;
+    border: none;
+    border-radius: var(--radius-pill);
+    padding: 13px 22px;
+    cursor: pointer;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+  }
+
+  .btn:hover:not(:disabled) { transform: translateY(-1px); }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  .btn--primary { background: var(--ink); color: var(--cream); }
+  .btn--ghost {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--line);
+    padding: 9px 16px;
+    font-size: 12.5px;
+  }
+  .btn--small {
+    background: var(--ink);
+    color: var(--cream);
+    padding: 9px 16px;
+    font-size: 12.5px;
+    border-radius: var(--radius-pill);
+  }
+
+  /* ---------- Grid ---------- */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 28px;
+  }
+
+  .piece-card {
+    background: var(--cream);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .piece-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 14px 16px 12px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgba(34, 27, 23, 0.6);
+  }
+
+  .piece-meta__format {
+    padding: 3px 9px;
+    border-radius: var(--radius-pill);
+    background: var(--line-soft);
+    font-size: 10px;
+  }
+
+  /* ---------- Canvas (captured node) ---------- */
+  .piece-canvas-wrap {
+    display: flex;
+    justify-content: center;
+    padding: 0 16px;
+  }
+
+  .piece-canvas {
+    position: relative;
+    width: 360px;
+    overflow: hidden;
+    background: var(--cream);
+    border: 1px solid var(--line);
+  }
+
+  .piece-canvas[data-ratio="4:5"] { height: 450px; }
+  .piece-canvas[data-ratio="9:16"] { height: 640px; }
+
+  .piece-canvas[data-palette="0"] { --accent2: var(--coral); --accent2-text: #FFF8EF; }
+  .piece-canvas[data-palette="1"] { --accent2: #FFC93C; --accent2-text: #221B17; }
+  .piece-canvas[data-palette="2"] { --accent2: #2EC4B6; --accent2-text: #0E2B28; }
+  .piece-canvas[data-palette="3"] { --accent2: #FF3D86; --accent2-text: #FFF8EF; }
+  .piece-canvas[data-palette="4"] { --accent2: #7B5EA7; --accent2-text: #FFF8EF; }
+
+  /* ---------- Foto pieces ---------- */
+  .piece-photo {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    background-color: #E4D8C8;
+    background-image: repeating-linear-gradient(135deg, rgba(34,27,23,0.06) 0px, rgba(34,27,23,0.06) 2px, transparent 2px, transparent 14px);
+  }
+
+  .piece-photo__placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px;
+  }
+
+  .piece-photo__placeholder span {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgba(34, 27, 23, 0.45);
+    border: 1px dashed rgba(34, 27, 23, 0.3);
+    border-radius: var(--radius-pill);
+    padding: 8px 14px;
+  }
+
+  .piece-photo[data-has-photo="true"] + .piece-photo__placeholder { display: none; }
+
+  .piece-scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(15, 11, 9, 0.78) 0%, rgba(15, 11, 9, 0.32) 45%, transparent 72%);
+  }
+
+  /* ---------- Design-only pieces ---------- */
+  .piece-canvas[data-formato="design"] {
+    background: linear-gradient(165deg, var(--accent2) 0%, var(--accent2) 58%, var(--cream) 58%, var(--cream) 100%);
+  }
+
+  .piece-canvas[data-formato="design"]::before {
+    content: "";
+    position: absolute;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: var(--coral);
+    right: -70px;
+    bottom: -70px;
+    opacity: 0.9;
+  }
+
+  /* ---------- Text content layer ---------- */
+  .piece-content {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    padding: 22px;
+  }
+
+  .piece-canvas[data-formato="foto"] .piece-content {
+    justify-content: flex-end;
+  }
+
+  .piece-canvas[data-formato="design"] .piece-content {
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .piece-kicker {
+    display: inline-block;
+    align-self: flex-start;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: var(--accent2);
+    color: var(--accent2-text);
+    padding: 5px 12px;
+    border-radius: var(--radius-pill);
+    margin-bottom: 14px;
+  }
+
+  .piece-canvas[data-formato="design"] .piece-kicker {
+    background: var(--ink);
+    color: var(--cream);
+  }
+
+  .piece-headline {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 27px;
+    line-height: 1.14;
+    margin-bottom: 10px;
+  }
+
+  .piece-canvas[data-formato="foto"] .piece-headline { color: var(--cream); }
+  .piece-canvas[data-formato="design"] .piece-headline { color: var(--ink); }
+
+  .piece-sub {
+    font-family: var(--font-body);
+    font-size: 14.5px;
+    line-height: 1.4;
+    margin-bottom: 14px;
+  }
+
+  .piece-canvas[data-formato="foto"] .piece-sub { color: rgba(255, 248, 239, 0.88); }
+  .piece-canvas[data-formato="design"] .piece-sub { color: rgba(34, 27, 23, 0.78); }
+
+  .piece-sub:empty { display: none; }
+
+  .piece-cta {
+    display: inline-block;
+    align-self: flex-start;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    background: var(--coral);
+    color: #FFF8EF;
+    padding: 8px 14px;
+    border-radius: var(--radius-pill);
+  }
+
+  .piece-cta:empty { display: none; }
+
+  /* ---------- Per-card controls ---------- */
+  .piece-controls {
+    padding: 14px 16px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .swatches {
+    display: flex;
+    gap: 6px;
+  }
+
+  .swatch {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1px solid rgba(34, 27, 23, 0.25);
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .swatch[data-active="true"] {
+    box-shadow: 0 0 0 2px var(--cream), 0 0 0 4px var(--ink);
+  }
+
+  .piece-controls__right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .file-label {
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+    padding: 9px 14px;
+    cursor: pointer;
+  }
+
+  .file-input { display: none; }
+
+  /* ---------- Footer ---------- */
+  .footer {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    font-size: 13px;
+    color: rgba(34, 27, 23, 0.55);
+  }
+
+  @media (max-width: 720px) {
+    .page { padding: 24px 16px 64px; }
+    .header { align-items: flex-start; }
+    .piece-canvas { width: 100%; max-width: 360px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="header">
+    <div class="header__text">
+      <p class="header__eyebrow">Dulce Cotillón · Chivilcoy</p>
+      <h1 class="header__title">Semana del Amigo &amp; vacaciones de invierno</h1>
+      <p class="header__sub">13 al 19 de julio de 2026 · 17 piezas para Instagram</p>
+    </div>
+    <div class="header__actions">
+      <span id="font-status" class="status-text">Cargando tipografías…</span>
+      <button id="download-all" class="btn btn--primary" disabled>Descargar todo (.zip)</button>
+    </div>
+  </header>
+
+  <main id="grid" class="grid"></main>
+
+  <footer class="footer">
+    <p>Cada texto se edita haciendo clic directo sobre la vista previa. La foto y la paleta de color se cambian pieza por pieza, con los controles de abajo de cada tarjeta.</p>
+  </footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var PIECES = [
+    { id: 1, tipo: 'Post · Carrusel', dia: 'Lun 13/7', formato: 'foto', ratio: '4:5', palette: 1,
+      kicker: 'Arranca la semana', headline: '7 días para el Día del Amigo', sub: '',
+      cta: 'Pasá por Güemes 241', photoHint: 'Foto del local o mostrador' },
+    { id: 2, tipo: 'Story', dia: 'Lun 13/7', formato: 'design', ratio: '9:16', palette: 1,
+      kicker: 'Faltan', headline: '7 días', sub: 'para el Día del Amigo',
+      cta: 'Deslizá para ver ideas', photoHint: '' },
+    { id: 3, tipo: 'Reel · Portada', dia: 'Lun 13/7', formato: 'foto', ratio: '9:16', palette: 2,
+      kicker: 'Paso a paso', headline: 'De la góndola a tus manos en 3 minutos', sub: '',
+      cta: 'Decinos para quién es', photoHint: 'Manos armando una caja de regalo' },
+    { id: 4, tipo: 'Post · Foto única', dia: 'Mar 14/7', formato: 'foto', ratio: '4:5', palette: 2,
+      kicker: 'Regalo de amigo', headline: 'Vos elegís, nosotros lo llenamos de buena onda', sub: '',
+      cta: 'Mirá las opciones en el local', photoHint: 'Cajas y sets de regalo armados' },
+    { id: 5, tipo: 'Story', dia: 'Mar 14/7', formato: 'design', ratio: '9:16', palette: 3,
+      kicker: 'Encuesta', headline: '¿Ya tenés el regalo de tu amigo/a?', sub: 'Sí — No',
+      cta: '', photoHint: '' },
+    { id: 6, tipo: 'Post · Carrusel', dia: 'Mié 15/7', formato: 'foto', ratio: '4:5', palette: 3,
+      kicker: 'Vacaciones de invierno', headline: 'Fiesta temática incluida', sub: '',
+      cta: 'Contanos el tema y armamos el combo', photoHint: 'Cotillón temático infantil' },
+    { id: 7, tipo: 'Story', dia: 'Mié 15/7', formato: 'foto', ratio: '9:16', palette: 4,
+      kicker: 'Behind the scenes', headline: 'Así armamos un cumple temático', sub: '',
+      cta: 'Escribinos y lo armamos para el tuyo', photoHint: 'Proceso de armado del combo' },
+    { id: 8, tipo: 'Post · Foto única', dia: 'Jue 16/7', formato: 'foto', ratio: '4:5', palette: 4,
+      kicker: 'Repostería', headline: 'La torta también cuenta la historia de la fiesta', sub: '',
+      cta: 'Pedila con anticipación', photoHint: 'Torta, cupcakes o toppers' },
+    { id: 9, tipo: 'Reel · Portada', dia: 'Jue 16/7', formato: 'foto', ratio: '9:16', palette: 1,
+      kicker: 'Armado exprés', headline: 'Una mesa dulce en menos de un minuto', sub: '',
+      cta: 'Reservá tu combo', photoHint: 'Mesa dulce / candy bar' },
+    { id: 10, tipo: 'Story', dia: 'Jue 16/7', formato: 'design', ratio: '9:16', palette: 1,
+      kicker: 'Tip', headline: '3 ideas para tu mesa dulce de invierno', sub: '',
+      cta: 'Guardá este post', photoHint: '' },
+    { id: 11, tipo: 'Post · Foto única', dia: 'Vie 17/7', formato: 'foto', ratio: '4:5', palette: 2,
+      kicker: 'Golosinas', headline: 'Para repartir, para regalar, para lo que se te ocurra', sub: '',
+      cta: 'Armamos tu bolsa a medida', photoHint: 'Golosinas variadas' },
+    { id: 12, tipo: 'Story', dia: 'Vie 17/7', formato: 'foto', ratio: '9:16', palette: 2,
+      kicker: 'Recién llegadas', headline: 'Lo nuevo de la semana', sub: '',
+      cta: 'Pasá a verlas', photoHint: 'Primer plano de golosinas nuevas' },
+    { id: 13, tipo: 'Post · Carrusel', dia: 'Sáb 18/7', formato: 'foto', ratio: '4:5', palette: 3,
+      kicker: 'Decoración', headline: 'El sábado es para decorar como se debe', sub: '',
+      cta: 'Abierto de 8:30 a 20:30, sin pausa', photoHint: 'Globos, guirnaldas, telas de fondo' },
+    { id: 14, tipo: 'Reel · Portada', dia: 'Sáb 18/7', formato: 'foto', ratio: '9:16', palette: 3,
+      kicker: 'Paso a paso', headline: 'Un arco de globos, de cero a fiesta', sub: '',
+      cta: 'Encargalo con unos días de anticipación', photoHint: 'Armado de arco de globos' },
+    { id: 15, tipo: 'Story', dia: 'Sáb 18/7', formato: 'design', ratio: '9:16', palette: 4,
+      kicker: 'Recordatorio', headline: 'El domingo se viene el Día del Amigo', sub: '',
+      cta: '', photoHint: '' },
+    { id: 16, tipo: 'Post · Diseño', dia: 'Dom 19/7', formato: 'design', ratio: '4:5', palette: 4,
+      kicker: 'Última llamada', headline: 'Mañana ya es tarde', sub: 'Hoy abrimos de 8:30 a 20:30',
+      cta: 'Vení antes de que cierre el día', photoHint: '' },
+    { id: 17, tipo: 'Story', dia: 'Dom 19/7', formato: 'design', ratio: '9:16', palette: 1,
+      kicker: 'Mañana', headline: 'Feliz Día del Amigo', sub: 'Los abrazamos a la distancia',
+      cta: 'Contale a tu amigo/a que pensaste en él/ella', photoHint: '' }
+  ];
+
+  var PALETTE_COLORS = ['#FF5A4E', '#FFC93C', '#2EC4B6', '#FF3D86', '#7B5EA7'];
+
+  var PIECES_BY_ID = {};
+  PIECES.forEach(function (p) { PIECES_BY_ID[p.id] = p; });
+
+  var grid = document.getElementById('grid');
+  var downloadAllBtn = document.getElementById('download-all');
+  var fontStatus = document.getElementById('font-status');
+
+  /* ---------- Construcción de tarjetas ---------- */
+  function buildSwatches(activeIndex) {
+    var html = '';
+    for (var i = 0; i < PALETTE_COLORS.length; i++) {
+      html +=
+        '<button type="button" class="swatch" style="background:' + PALETTE_COLORS[i] + '" ' +
+        'data-palette-option="' + i + '" data-active="' + (i === activeIndex ? 'true' : 'false') + '" ' +
+        'aria-label="Paleta ' + (i + 1) + '"></button>';
+    }
+    return html;
+  }
+
+  function buildCanvas(p) {
+    var photoBlock = '';
+    if (p.formato === 'foto') {
+      photoBlock =
+        '<div class="piece-photo" data-has-photo="false"></div>' +
+        '<div class="piece-photo__placeholder"><span>' + (p.photoHint || 'Subí una foto') + '</span></div>' +
+        '<div class="piece-scrim"></div>';
+    }
+
+    return (
+      '<div class="piece-canvas" data-ratio="' + p.ratio + '" data-formato="' + p.formato + '" data-palette="' + p.palette + '">' +
+        photoBlock +
+        '<div class="piece-content">' +
+          '<div class="piece-kicker" contenteditable="true" spellcheck="false">' + p.kicker + '</div>' +
+          '<div class="piece-headline" contenteditable="true" spellcheck="false">' + p.headline + '</div>' +
+          '<div class="piece-sub" contenteditable="true" spellcheck="false">' + p.sub + '</div>' +
+          '<div class="piece-cta" contenteditable="true" spellcheck="false">' + p.cta + '</div>' +
+        '</div>' +
+      '</div>'
+    );
+  }
+
+  function buildCard(p) {
+    var card = document.createElement('article');
+    card.className = 'piece-card';
+    card.setAttribute('data-piece-id', String(p.id));
+
+    var formatLabel = p.formato === 'foto' ? 'Foto' : 'Diseño';
+    var photoControl = p.formato === 'foto'
+      ? '<label class="file-label">Cambiar foto<input type="file" accept="image/*" class="file-input" data-photo-input></label>'
+      : '';
+
+    card.innerHTML =
+      '<div class="piece-meta">' +
+        '<span>' + p.tipo + ' · ' + p.dia + '</span>' +
+        '<span class="piece-meta__format">' + formatLabel + '</span>' +
+      '</div>' +
+      '<div class="piece-canvas-wrap">' + buildCanvas(p) + '</div>' +
+      '<div class="piece-controls">' +
+        '<div class="swatches">' + buildSwatches(p.palette) + '</div>' +
+        '<div class="piece-controls__right">' +
+          photoControl +
+          '<button type="button" class="btn btn--small" data-download-btn>Descargar PNG</button>' +
+        '</div>' +
+      '</div>';
+
+    return card;
+  }
+
+  /* ---------- Interacción por tarjeta ---------- */
+  function wireCard(card, piece) {
+    var canvas = card.querySelector('.piece-canvas');
+    var swatches = Array.prototype.slice.call(card.querySelectorAll('[data-palette-option]'));
+
+    swatches.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        canvas.setAttribute('data-palette', btn.getAttribute('data-palette-option'));
+        swatches.forEach(function (b) { b.setAttribute('data-active', 'false'); });
+        btn.setAttribute('data-active', 'true');
+      });
+    });
+
+    var fileInput = card.querySelector('[data-photo-input]');
+    if (fileInput) {
+      fileInput.addEventListener('change', function (event) {
+        var file = event.target.files && event.target.files[0];
+        if (!file) { return; }
+        var reader = new FileReader();
+        reader.onload = function (e) {
+          var photoEl = canvas.querySelector('.piece-photo');
+          photoEl.style.backgroundImage = 'url(' + e.target.result + ')';
+          photoEl.setAttribute('data-has-photo', 'true');
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    var downloadBtn = card.querySelector('[data-download-btn]');
+    downloadBtn.addEventListener('click', function () {
+      exportNode(canvas, fileNameFor(piece)).finally(function () {
+        downloadBtn.disabled = false;
+      });
+      downloadBtn.disabled = true;
+    });
+  }
+
+  document.addEventListener('keydown', function (event) {
+    if (event.key !== 'Enter') { return; }
+    var target = event.target;
+    if (target && target.classList && (target.classList.contains('piece-kicker') || target.classList.contains('piece-cta'))) {
+      event.preventDefault();
+    }
+  });
+
+  /* ---------- Exportación ---------- */
+  function fileNameFor(piece) {
+    var slug = piece.headline
+      .toLowerCase()
+      .replace(/[áàä]/g, 'a').replace(/[éèë]/g, 'e').replace(/[íìï]/g, 'i')
+      .replace(/[óòö]/g, 'o').replace(/[úùü]/g, 'u').replace(/ñ/g, 'n')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-+|-+$)/g, '');
+    var num = p2(piece.id);
+    return 'dulce-cotillon-' + num + '-' + slug + '.png';
+  }
+
+  function p2(n) {
+    return n < 10 ? '0' + n : String(n);
+  }
+
+  function blurActiveEditable() {
+    var active = document.activeElement;
+    if (active && active.getAttribute && active.getAttribute('contenteditable') === 'true') {
+      active.blur();
+    }
+  }
+
+  function captureNode(node) {
+    if (typeof window.html2canvas !== 'function') {
+      return Promise.reject(new Error('html2canvas no está disponible'));
+    }
+    blurActiveEditable();
+    return window.html2canvas(node, { scale: 3, backgroundColor: null, useCORS: true })
+      .then(function (canvasEl) {
+        return new Promise(function (resolve) {
+          canvasEl.toBlob(function (blob) { resolve(blob); }, 'image/png');
+        });
+      });
+  }
+
+  function exportNode(node, filename) {
+    return captureNode(node)
+      .then(function (blob) {
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        return blob;
+      })
+      .catch(function (err) {
+        fontStatus.textContent = 'No se pudo exportar esta pieza. Probá de nuevo.';
+        throw err;
+      });
+  }
+
+  function downloadAll() {
+    if (typeof window.JSZip !== 'function') {
+      fontStatus.textContent = 'No se pudo cargar el compresor ZIP. Revisá tu conexión.';
+      return;
+    }
+
+    var cards = Array.prototype.slice.call(document.querySelectorAll('.piece-card'));
+    var zip = new window.JSZip();
+    var index = 0;
+
+    downloadAllBtn.disabled = true;
+
+    function finishZip() {
+      fontStatus.textContent = 'Comprimiendo…';
+      zip.generateAsync({ type: 'blob' })
+        .then(function (zipBlob) {
+          var url = URL.createObjectURL(zipBlob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = 'dulce-cotillon-semana-del-amigo.zip';
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+          fontStatus.textContent = 'Listo: ' + cards.length + ' piezas descargadas.';
+          downloadAllBtn.disabled = false;
+        })
+        .catch(function () {
+          fontStatus.textContent = 'Hubo un error al comprimir. Probá de nuevo.';
+          downloadAllBtn.disabled = false;
+        });
+    }
+
+    function next() {
+      if (index >= cards.length) {
+        finishZip();
+        return;
+      }
+
+      var card = cards[index];
+      var piece = PIECES_BY_ID[card.getAttribute('data-piece-id')];
+      var canvas = card.querySelector('.piece-canvas');
+
+      fontStatus.textContent = 'Generando ' + (index + 1) + ' / ' + cards.length + '…';
+
+      captureNode(canvas)
+        .then(function (blob) {
+          zip.file(fileNameFor(piece), blob);
+          index += 1;
+          next();
+        })
+        .catch(function () {
+          fontStatus.textContent = 'Error en la pieza ' + (index + 1) + '. Probá de nuevo.';
+          downloadAllBtn.disabled = false;
+        });
+    }
+
+    next();
+  }
+
+  downloadAllBtn.addEventListener('click', downloadAll);
+
+  /* ---------- Inicio ---------- */
+  PIECES.forEach(function (p) {
+    var card = buildCard(p);
+    grid.appendChild(card);
+    wireCard(card, p);
+  });
+
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function () {
+      fontStatus.textContent = '';
+      downloadAllBtn.disabled = false;
+    });
+  } else {
+    fontStatus.textContent = '';
+    downloadAllBtn.disabled = false;
+  }
+})();
+</script>
+</body>
+</html>

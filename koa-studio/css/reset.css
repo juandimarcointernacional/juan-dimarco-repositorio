@@ -1,0 +1,96 @@
+/* ---------- Reset / normalize ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img,
+svg,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+  border: none;
+  background: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+input:focus-visible,
+button:focus-visible,
+a:focus-visible {
+  outline: 1px solid var(--stone-dark);
+  outline-offset: 3px;
+}
+
+/* ---------- Variables globales ---------- */
+:root {
+  /* Paleta */
+  --cream: #f7f4f0;
+  --dark: #1a1916;
+  --text-on-light: #1a1916;
+  --text-on-dark: #f7f4f0;
+  --stone: #b5a090;
+  --stone-dark: #7a6a5e;
+  --surface-light: rgba(255, 255, 255, 0.7);
+  --surface-dark: rgba(26, 25, 22, 0.55);
+  --border-stone: rgba(181, 160, 144, 0.25);
+  --border-stone-strong: rgba(181, 160, 144, 0.45);
+
+  /* 3D */
+  --c3d-cream: #f0ebe3;
+  --c3d-stone: #b5a090;
+  --c3d-dark: #1a1916;
+
+  /* Tipografía */
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', monospace;
+
+  /* Sombras */
+  --shadow-soft: 0 18px 40px -16px rgba(26, 25, 22, 0.18);
+  --shadow-card: 0 10px 30px -12px rgba(122, 106, 94, 0.25);
+  --shadow-lift: 0 24px 48px -18px rgba(26, 25, 22, 0.28);
+
+  /* Movimiento */
+  --ease-soft: cubic-bezier(0.2, 0.9, 0.3, 1);
+  --radius-sm: 2px;
+  --radius-md: 4px;
+
+  /* Layout */
+  --container-w: 1180px;
+  --nav-h: 84px;
+}

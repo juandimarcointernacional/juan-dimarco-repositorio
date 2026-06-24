@@ -6,7 +6,7 @@
 <title>Dulce Cotillón — Tablero de contenido · Semana del Amigo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -16,12 +16,12 @@
     --coral: #FF5A4E;
     --line: rgba(34, 27, 23, 0.12);
     --line-soft: rgba(34, 27, 23, 0.07);
-    --radius-card: 18px;
+    --radius-card: 22px;
     --radius-pill: 999px;
-    --font-display: 'Fraunces', serif;
+    --font-display: 'Baloo 2', sans-serif;
     --font-body: 'DM Sans', sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
     --shadow-card: 0 1px 2px rgba(34, 27, 23, 0.04), 0 12px 28px -12px rgba(34, 27, 23, 0.18);
+    --shadow-pop: 0 4px 0 rgba(34, 27, 23, 0.18);
   }
 
   html, body {
@@ -52,9 +52,10 @@
   }
 
   .header__eyebrow {
-    font-family: var(--font-mono);
+    font-family: var(--font-body);
+    font-weight: 800;
     font-size: 12px;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--coral);
     margin-bottom: 10px;
@@ -80,8 +81,9 @@
   }
 
   .status-text {
-    font-family: var(--font-mono);
-    font-size: 12px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 12.5px;
     color: rgba(34, 27, 23, 0.55);
   }
 
@@ -137,9 +139,10 @@
     justify-content: space-between;
     gap: 8px;
     padding: 14px 16px 12px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.04em;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 11.5px;
+    letter-spacing: 0.02em;
     text-transform: uppercase;
     color: rgba(34, 27, 23, 0.6);
   }
@@ -196,9 +199,10 @@
   }
 
   .piece-photo__placeholder span {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.04em;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 11.5px;
+    letter-spacing: 0.02em;
     text-transform: uppercase;
     color: rgba(34, 27, 23, 0.45);
     border: 1px dashed rgba(34, 27, 23, 0.3);
@@ -214,22 +218,35 @@
     background: linear-gradient(to top, rgba(15, 11, 9, 0.78) 0%, rgba(15, 11, 9, 0.32) 45%, transparent 72%);
   }
 
-  /* ---------- Design-only pieces ---------- */
+  /* ---------- Design-only pieces: fondo plano + confeti ---------- */
   .piece-canvas[data-formato="design"] {
-    background: linear-gradient(165deg, var(--accent2) 0%, var(--accent2) 58%, var(--cream) 58%, var(--cream) 100%);
+    background: var(--accent2);
   }
 
-  .piece-canvas[data-formato="design"]::before {
-    content: "";
+  /* ---------- Confeti decorativo (mismas piezas en foto y diseño) ---------- */
+  .confetti {
     position: absolute;
-    width: 220px;
-    height: 220px;
-    border-radius: 50%;
-    background: var(--coral);
-    right: -70px;
-    bottom: -70px;
-    opacity: 0.9;
+    z-index: 1;
+    pointer-events: none;
   }
+
+  .confetti--circle { border-radius: 50%; }
+  .confetti--square { border-radius: 4px; }
+  .confetti--triangle {
+    width: 0;
+    height: 0;
+    background: transparent !important;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 14px solid currentColor;
+  }
+
+  .confetti--1 { top: 18px; right: 26px; width: 16px; height: 16px; background: var(--coral); transform: rotate(8deg); }
+  .confetti--2 { top: 52px; right: 64px; width: 10px; height: 10px; background: var(--cream); opacity: 0.9; }
+  .confetti--3 { top: 14px; right: 92px; color: var(--accent2); transform: rotate(20deg); }
+  .confetti--4 { top: 70px; right: 22px; width: 12px; height: 12px; background: var(--cream); opacity: 0.85; transform: rotate(-12deg); }
+  .confetti--5 { top: 96px; right: 56px; width: 9px; height: 9px; background: var(--coral); opacity: 0.9; }
+  .confetti--6 { top: 36px; right: 16px; color: var(--coral); opacity: 0.8; transform: rotate(-30deg) scale(0.8); }
 
   /* ---------- Text content layer ---------- */
   .piece-content {
@@ -253,54 +270,59 @@
   .piece-kicker {
     display: inline-block;
     align-self: flex-start;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.06em;
+    font-family: var(--font-body);
+    font-weight: 800;
+    font-size: 12px;
+    letter-spacing: 0.01em;
     text-transform: uppercase;
     background: var(--accent2);
     color: var(--accent2-text);
-    padding: 5px 12px;
-    border-radius: var(--radius-pill);
+    padding: 7px 16px;
+    border-radius: 14px 14px 14px 4px;
     margin-bottom: 14px;
+    transform: rotate(-2deg);
   }
 
   .piece-canvas[data-formato="design"] .piece-kicker {
-    background: var(--ink);
-    color: var(--cream);
+    background: var(--coral);
+    color: #FFFDF8;
   }
 
   .piece-headline {
     font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 27px;
-    line-height: 1.14;
+    font-weight: 700;
+    font-size: 29px;
+    line-height: 1.08;
     margin-bottom: 10px;
   }
 
   .piece-canvas[data-formato="foto"] .piece-headline { color: var(--cream); }
-  .piece-canvas[data-formato="design"] .piece-headline { color: var(--ink); }
+  .piece-canvas[data-formato="design"] .piece-headline { color: var(--accent2-text); }
 
   .piece-sub {
     font-family: var(--font-body);
-    font-size: 14.5px;
+    font-weight: 500;
+    font-size: 15px;
     line-height: 1.4;
     margin-bottom: 14px;
   }
 
   .piece-canvas[data-formato="foto"] .piece-sub { color: rgba(255, 248, 239, 0.88); }
-  .piece-canvas[data-formato="design"] .piece-sub { color: rgba(34, 27, 23, 0.78); }
+  .piece-canvas[data-formato="design"] .piece-sub { color: var(--accent2-text); opacity: 0.85; }
 
   .piece-sub:empty { display: none; }
 
   .piece-cta {
     display: inline-block;
     align-self: flex-start;
-    font-family: var(--font-mono);
-    font-size: 12px;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 14px;
     background: var(--coral);
-    color: #FFF8EF;
-    padding: 8px 14px;
+    color: #FFFDF8;
+    padding: 12px 22px;
     border-radius: var(--radius-pill);
+    box-shadow: var(--shadow-pop);
   }
 
   .piece-cta:empty { display: none; }
@@ -470,6 +492,14 @@
     return html;
   }
 
+  var CONFETTI_SHAPES =
+    '<span class="confetti confetti--1 confetti--circle"></span>' +
+    '<span class="confetti confetti--2 confetti--circle"></span>' +
+    '<span class="confetti confetti--3 confetti--triangle"></span>' +
+    '<span class="confetti confetti--4 confetti--square"></span>' +
+    '<span class="confetti confetti--5 confetti--circle"></span>' +
+    '<span class="confetti confetti--6 confetti--triangle"></span>';
+
   function buildCanvas(p) {
     var photoBlock = '';
     if (p.formato === 'foto') {
@@ -482,6 +512,7 @@
     return (
       '<div class="piece-canvas" data-ratio="' + p.ratio + '" data-formato="' + p.formato + '" data-palette="' + p.palette + '">' +
         photoBlock +
+        CONFETTI_SHAPES +
         '<div class="piece-content">' +
           '<div class="piece-kicker" contenteditable="true" spellcheck="false">' + p.kicker + '</div>' +
           '<div class="piece-headline" contenteditable="true" spellcheck="false">' + p.headline + '</div>' +
